@@ -1,3 +1,5 @@
+import yaml
+
 from webapp.data_access_layer.mongo_db.mongo_db_atlas import MongoDBOperation
 from webapp.entity_layer.encryption.encrypt_confidential_data import EncryptData
 
@@ -148,13 +150,14 @@ def get_sender_email_id_credentials():
     encrypt_data = EncryptData()
     collection_name = "email_config"
     email_config = mgdb.get_record(database_name, collection_name, {})
-
+    config = yaml.safe_load(open("project_credentials.yaml"))
     encrypted_email_address = "gAAAAABhBCyldMc5eLzz1kVl8bBIBuOjxZgbgb9K7rFs7nMR-jWB1VO_xUrnA6j6RukxwVZJHMbYjFLt-A4xDm7" \
                               "-729zD4hH_yuiPXJPPWHr4gewfs0Z4_o= "
     encrypted_password = "gAAAAABhIzu6IoJzFjX1Fv4UvzoLmOjot7P5J5fFpwnsqZBrvmNyfPwonF-kurj6oe4dbm9_S_HgpGrD9DjCn6DPYdSy3I4dEScXAL7xvun0SO48c0wpdT4="
     result = {
         'email_address': email_config["sender_email_id"],
-        'passkey': encrypt_data.decrypt_message(email_config["passkey"]).decode('utf-8'),
+        'passkey':
+            encrypt_data.decrypt_message(email_config["passkey"],config['key']).decode('utf-8'),
     }
     return result
 
